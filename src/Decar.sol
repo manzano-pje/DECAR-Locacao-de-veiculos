@@ -13,6 +13,7 @@ contract Decar{
 
     // Veículo 
     struct Vehicle{
+        vehicleRegistration
         uint256 id;               // id veículo
         string name;              // Nome do veículo
         string brand;             // Marca do veículo
@@ -27,6 +28,7 @@ contract Decar{
 
     // Locação
     struct Rental{
+        vehicleRegistration
         uint256 rentalId;        // id do veículo
         address tenant;          // endereço do locador
         uint256 startDate;       // data de início
@@ -37,6 +39,7 @@ contract Decar{
     ////////// STATE VARIABLES //////////
 
     uint256 constant MINIMUM_VALUE = 0.01 ether; // valor mínimo
+
     uint256 public vehiclesCounter = 0;          // contador de veículos da locadora
     uint256 public locatedVehicles;              // Veículos locados
     uint256 public unoccupiedVehicles;           // Veículos disponíveis
@@ -101,7 +104,9 @@ contract Decar{
     ////////// CONSTRUTORES //////////
 
     constructor(){
+        vehicleRegistration
         plataformOwner = msg.sender;
+
     }
 
     ////////// FUNÇÕES //////////
