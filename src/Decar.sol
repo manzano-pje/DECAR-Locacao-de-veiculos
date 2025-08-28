@@ -36,7 +36,7 @@ contract Decar{
 
     ////////// STATE VARIABLES //////////
 
-    uint256 constant MINIMUM_VALUE = 0.4 ether; // valor mínimo
+    uint256 constant MINIMUM_VALUE = 0.01 ether; // valor mínimo
     uint256 public vehiclesCounter = 0;          // contador de veículos da locadora
     uint256 public locatedVehicles;              // Veículos locados
     uint256 public unoccupiedVehicles;           // Veículos disponíveis
@@ -56,6 +56,8 @@ contract Decar{
     ////////// EVENTS //////////
     event vehicleRegistered (uint256 indexed id, string name, string brand, string model,
                              string details, uint16 year, uint256 value, uint256 mileage);
+    event vehicleUpdate (uint256 indexed id, string name, string brand, string model, string details, 
+                        uint16 year, uint256 value, uint256 mileage, uint256 registeredAtDate, bool isRented); 
     event vehicleRented (uint256 indexed id, uint256 indexed rentalId, address indexed tenant);
     event rentalCompleted (uint256 indexed id, uint256 indexed rentalId, address indexed tenant);
    
@@ -94,7 +96,7 @@ contract Decar{
         uint256 _value,         
         uint256 _mileage        
         ) external onlyPlataformOwner() returns(uint256){
-            require(_value > MINIMUM_VALUE, "O valor do veiculo deve ser maior que 0.4 ethers.");
+            require(_value > MINIMUM_VALUE, "O valor do veiculo deve ser maior que 0.01 ethers.");
             vehiclesCounter ++;
 
             vehicles[vehiclesCounter] = Vehicle({
@@ -117,7 +119,34 @@ contract Decar{
             return vehiclesCounter;
         }
 
+    function vehicleUpdate(
+        uint256 _id, 
+        string memory _name,     
+        string memory _brand,    
+        string memory _model,    
+        string memory _details,  
+        uint16 _year,            
+        uint256 _value,         
+        uint256 _mileage
+        ) external onlyPlataformOwner() vehicleExist() returns(uint256){
+            require(_value > MINIMUM_VALUE, "O valor do veiculo deve ser maior que 0.01 ethers.");
+            vehiclesCounter ++;
 
+            vehicles[vehiclesCounter] = Vehicle({
+                id: vehiclesCounter,
+                name:  _name,     
+                brand: _brand,    
+                model: _model,    
+                details: _details,  
+                year: _year,            
+                value: _value,         
+                mileage: _mileage
+            });
+            
+            emit vehicleUpdate (_id, _name, _brand, _model, _details, _year, _value, _mileage, 
+                                vehicles[_id].registeredAtDate, vehicles[_id].isRented); 
+            return _id;                                
+    }
 
 
 }
