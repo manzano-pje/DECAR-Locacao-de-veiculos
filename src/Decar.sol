@@ -79,9 +79,26 @@ contract Decar{
 
     modifier onlyPlataformOwner(){
         require(msg.sender == plataformOwner, "Area restrita. Conecte como administrador");
- vehicleRegistration
         _;
+    }
 
+    modifier dataValidation(string memory _name, string memory _brand, string memory _model, 
+                            string memory _details, uint16 _year, uint256 _value, uint256 _mileage){
+            uint256 limitYear = 1970 + (block.timestamp / 1 years) + 1;
+            require(bytes(_name).length > 0, "O nome do veículo não pode ser vazio.");
+            require(bytes(_name).length <= 30, "O nome do veículo maior que 30 caracteres.");
+            require(bytes(_brand).length > 0, "O tipo do veículo não pode ser vazio.");
+            require(bytes(_brand).length <= 30, "O tipo do veículo maior que 30 caracteres.");
+            require(bytes(_model).length > 0, "O modelo do veículo não pode ser vazio.");
+            require(bytes(_model).length <50, "O modelo do veículo não pode ser maior que 50 caracteres.");
+            require(bytes(_details).length > 0, "Os detalhes do veículo não podem estar em branco.");
+            require(bytes(_details).length < 100, "Os detalhes do veículo não podem ser maior que 100 caracteres.");
+            require(_year < limitYear, "O ano do veículo não pode ser maior que ", limitYear.toString());
+            require(_year > 1950, "O ano do veículo não pode ser menor que 1950.");
+            require(_value > MINIMUM_VALUE, "O valor do veículo deve ser maior que 0.01 ethers.");
+            require(_value < 100 ether, "O valor não pode ser maior que 100 ether.");
+            require(_mileage >= 0, "A quilometragem do veículo não pode ser menor que 0.");
+            _;
     }
 
     ////////// CONSTRUTORES //////////
@@ -102,9 +119,13 @@ contract Decar{
         uint16 _year,            
         uint256 _value,         
         uint256 _mileage        
-        ) external onlyPlataformOwner() returns(uint256){
-            require(_value > MINIMUM_VALUE, "O valor do veiculo deve ser maior que 0.01 ethers.");
+        ) external 
+        onlyPlataformOwner() 
+        dataValidation(_name, _brand, _model, _details, _year, _value, _mileage)
+        returns(uint256)
+        {          
             vehiclesCounter ++;
+            unoccupiedVehicles++;
 
             vehicles[vehiclesCounter] = Vehicle({
                 id: vehiclesCounter,
@@ -135,12 +156,15 @@ contract Decar{
         uint16 _year,            
         uint256 _value,         
         uint256 _mileage
-        ) external onlyPlataformOwner() vehicleExist() returns(uint256){
-            require(_value > MINIMUM_VALUE, "O valor do veiculo deve ser maior que 0.01 ethers.");
-            vehiclesCounter ++;
-
-            vehicles[vehiclesCounter] = Vehicle({
-                id: vehiclesCounter,
+        ) external 
+          onlyPlataformOwner() 
+          dataValidation(_name, _brand, _model, _details, _year, _value, _mileage)
+          vehicleExist(_id) 
+          returns(uint256)
+          {
+            require(vehicles[_id].isRented == false, "O veículo está alugado. Você não pode fazer uma alteração com o veículo alugado.");
+                vehicles[_id] = Vehicle({
+                id: _id,
                 name:  _name,     
                 brand: _brand,    
                 model: _model,    
@@ -148,11 +172,12 @@ contract Decar{
                 year: _year,            
                 value: _value,         
                 mileage: _mileage
+                registeredAtDate: vehicles[_id].registeredAtDate,
+                isRented: false
             });
             
             emit vehicleUpdate (_id, _name, _brand, _model, _details, _year, _value, _mileage, 
                                 vehicles[_id].registeredAtDate, vehicles[_id].isRented); 
             return _id;                                
     }
-
 }
