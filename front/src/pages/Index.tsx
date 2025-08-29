@@ -27,7 +27,7 @@ const Index = () => {
       description: "Sedan executivo com tecnologia avançada, ideal para viagens de negócios. Interior em couro premium e sistema de som harman/kardon.",
       kilometers: 15000,
       image: carSedan,
-      isRented: false
+      isRented: true
     },
     {
       id: "2", 
@@ -50,7 +50,7 @@ const Index = () => {
       description: "Esportivo icônico com motor boxer turbo. Performance excepcional e design atemporal.",
       kilometers: 2500,
       image: carSports,
-      isRented: false
+      isRented: true
     },
     {
       id: "4",
