@@ -122,7 +122,6 @@ contract Decar{
     ////////// CONSTRUTORES //////////
 
     constructor(){
-        vehicleRegistration;
         plataformOwner = msg.sender;
     }
 
