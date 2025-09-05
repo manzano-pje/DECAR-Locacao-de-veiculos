@@ -40,7 +40,12 @@ contract Decar{
         uint256 startDate;       // data de inicio
         uint256 rentalDays;      // quantidade de dias locado
         uint256 rentalValue;     // Valor da locacao
+        bool isActive            // Veículo está locado
     }
+
+    
+    ////////// ERRORS //////////
+    
 
     ////////// STATE VARIABLES //////////
 
@@ -72,6 +77,7 @@ contract Decar{
     event vehicleRented (uint256 indexed id, uint256 indexed rentalId, address indexed tenant);
    
     event rentalCompleted (uint256 indexed id, uint256 indexed rentalId, address indexed tenant);
+    event logMessage (string message);
    
 
     ////////// MODIFIERS //////////    
@@ -244,5 +250,31 @@ contract Decar{
         emit vehicleRented ( vehicle.id,  locatedVehicles, msg.sender);
     }
 
-    
+    function CompletedRental(uint256 _rentalId) external payable vehicleExist(_rentalId) returns (uint256){
+        Rental storage rental = rentals[_rentalId];
+        require(rental.isActive, "O veiculo nao esta locado");
+        require(msg.sender == rental.tenant || 
+                msg.sender == plataformOwner,
+                "Somente o proprietario ou o locador podem finalizar a locacao.");      
+
+        // Cálculo da locação
+        uint256 totalCost = rental.rentalDays * rental.rentalValue;
+        if (msg.value < totalCost){
+            missingValue = totalCost - msg.value;
+           emit ("Faltam R$" +  missingValue);
+        }
+
+        if (msg.value > totalCost){
+            payable(msg.sender).transfer(msg.value - totalCost);
+        }
+
+
+        // Transferir valor da locação para proprietário
+        (bool success, ) = payable(plataformOwner).call{value: totalCost}("");
+        require(success, "Falha ao transferir fundos");
+
+        rental.isActive = false;
+        emit rentalCompleted( vehicles.id, rental.rentalId, rental.tenant);
+        return _rentalId;
+    }
 }

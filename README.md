@@ -1,66 +1,30 @@
-## Foundry
+# DApp – Plataforma de Locação de Veículos com Blockchain
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Este projeto foi desenvolvido para **repensar o mercado de locação de veículos**, resolvendo problemas comuns como:  
+- Burocracia em contratos  
+- Falta de transparência  
+- Custos elevados com intermediários  
+- Processos manuais lentos  
 
-Foundry consists of:
+## Solução
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Criamos uma **aplicação descentralizada (DApp)** em **Ethereum**, utilizando **Smart Contracts em Solidity** para automatizar contratos, pagamentos e cauções. Entre os diferenciais:
 
-## Documentation
+- **Contratos inteligentes**: registros imutáveis e auditáveis em blockchain  
+- **Pagamentos automatizados**: liquidação imediata em criptomoedas ou stablecoins  
+- **Caução inteligente**: valores travados e liberados automaticamente conforme regras definidas  
+- **Pronto para integração futura** com IoT e compliance  
 
-https://book.getfoundry.sh/
+## Aspectos Técnicos
 
-## Usage
+O desenvolvimento explorou:  
+- Validações de segurança  
+- Uso de **mappings**, variáveis de estado e **eventos**  
+- Organização de regras com **modifiers**  
+- Boas práticas de **clean code**  
 
-### Build
+Também foi criada uma **UI de apresentação** para demonstrar a interação com os smart contracts, validando o fluxo de negócios e proporcionando uma experiência intuitiva para os usuários.
 
-```shell
-$ forge build
-```
+## Resultado
 
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+O projeto entrega uma solução **ágil, segura e transparente**, modernizando a experiência de locadores e clientes, e preparando o sistema para futuras integrações tecnológicas.
