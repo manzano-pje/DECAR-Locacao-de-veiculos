@@ -78,6 +78,8 @@ contract Decar{
    
     event rentalCompleted (uint256 indexed id, uint256 indexed rentalId, address indexed tenant);
     event logMessage (string message);
+    event dashboard (uint256 locatedVehicles, uint256 unoccupiedVehicles, uint256 valueTotalToReceive, 
+                     uint256 totalReceived, uint256 totalAmount);
    
 
     ////////// MODIFIERS //////////    
@@ -283,4 +285,19 @@ contract Decar{
         return _rentalId;
     }
 
+    /**
+    * @notice Locação do veículo
+    * @param _id Id do veiculo
+    * @param _days Dias de locação
+
+    //  uint256 public locatedVehicles;              // Veiculos locados
+    // uint256 public unoccupiedVehicles;           // Veiculos disponiveis
+    // uint256 public valueTotalToReceive;          // Valor total a receber
+    // uint256 public totalReceived;                // Valor total recebido
+    // uint256 public totalAmount;                  // Total Geral
+    **/
+    function dashboard() public {
+
+        emit dashboard (locatedVehicles, unoccupiedVehicles, valueTotalToReceive, totalReceived, totalAmount);        
+    }
 }
