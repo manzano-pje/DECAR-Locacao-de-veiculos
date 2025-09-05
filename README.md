@@ -23,7 +23,7 @@ O desenvolvimento explorou:
 - Organização de regras com **modifiers**  
 - Boas práticas de **clean code**  
 
-Também foi criada uma **UI de apresentação** para demonstrar a interação com os smart contracts, validando o fluxo de negócios e proporcionando uma experiência intuitiva para os usuários.
+Também foi criada uma **UI de apresentação** por Inteligência Artificial (IA) a fim de prototipar e para demonstrar a interação com os smart contracts, validando o fluxo de negócios e proporcionando uma experiência intuitiva para os usuários.
 
 ## Resultado
 
