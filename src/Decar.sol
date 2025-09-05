@@ -250,6 +250,11 @@ contract Decar{
         emit vehicleRented ( vehicle.id,  locatedVehicles, msg.sender);
     }
 
+    /**
+    * @notice Locação do veículo
+    * @param _id Id do veiculo
+    * @param _days Dias de locação
+    **/
     function CompletedRental(uint256 _rentalId) external payable vehicleExist(_rentalId) returns (uint256){
         Rental storage rental = rentals[_rentalId];
         require(rental.isActive, "O veiculo nao esta locado");
@@ -277,4 +282,5 @@ contract Decar{
         emit rentalCompleted( vehicles.id, rental.rentalId, rental.tenant);
         return _rentalId;
     }
+
 }
