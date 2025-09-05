@@ -50,7 +50,7 @@ const Index = () => {
       description: "Esportivo icônico com motor boxer turbo. Performance excepcional e design atemporal.",
       kilometers: 2500,
       image: carSports,
-      isRented: false
+      isRented: true
     },
     {
       id: "4",
