@@ -20,7 +20,7 @@ contract Decar{
         string model;             // Modelo do veiculo
         string details;           // Detalhes do Veiculo
         uint16 year;              // Ano do veiculo
-        uint256 value;            // Valor do veiculo
+        uint256 valueDay;         // Valor do veiculo
         uint256 mileage;          // Km do veiculo
         uint256 registeredAtDate; // Data de cadastro
         bool isRented;            // Disponibilidade
@@ -34,7 +34,6 @@ contract Decar{
 
     // Locacao
     struct Rental{
-        // vehicleRegistration
         uint256 rentalId;        // id do veiculo
         address tenant;          // endereço do locador
         uint256 startDate;       // data de inicio
@@ -42,7 +41,6 @@ contract Decar{
         uint256 rentalValue;     // Valor da locacao
         bool isActive            // Veículo está locado
     }
-
     
     ////////// ERRORS //////////
     
@@ -69,10 +67,10 @@ contract Decar{
 
     ////////// EVENTS //////////
     event vehicleRegistered (uint256 indexed id, string name, string brand, string model,
-                             string details, uint16 year, uint256 value, uint256 mileage);
+                             string details, uint16 year, uint256 valueDay, uint256 mileage);
 
     event vehicleUpdate (uint256 indexed id, string name, string brand, string model, string details, 
-                        uint16 year, uint256 value, uint256 mileage, uint256 registeredAtDate, bool isRented); 
+                        uint16 year, uint256 valueDay, uint256 mileage, uint256 registeredAtDate, bool isRented); 
    
     event vehicleRented (uint256 indexed id, uint256 indexed rentalId, address indexed tenant);
    
@@ -114,7 +112,7 @@ contract Decar{
             require(_year < limitYear, "O ano do veiculo nao pode ser maior que ", limitYear.toString());
             require(_year > 1950, "O ano do veiculo nao pode ser menor que 1950.");
             require(_value > MINIMUM_VALUE, "O valor do veiculo deve ser maior que 0.01 ethers.");
-            require(_value < 100 ether, "O valor nao pode ser maior que 100 ether.");
+            require(_valueDay < 100 ether, "O valor nao pode ser maior que 100 ether.");
             require(_mileage >= 0, "A quilometragem do veiculo nao pode ser menor que 0.");
             _;
     }
@@ -134,7 +132,7 @@ contract Decar{
     @param _model Modelo do veiculo
     @param _details Detalhes do veiculo
     @param _year Ano do veiculo
-    @param _value Valor do veiculo
+    @param _valueDay Valor do veiculo
     @param _mileage Quilometragem do veiculo
     **/
 
@@ -144,11 +142,11 @@ contract Decar{
         string memory _model,    
         string memory _details,  
         uint16 _year,            
-        uint256 _value,         
+        uint256 _valueDay,         
         uint256 _mileage        
         ) external 
         onlyPlataformOwner() 
-        dataValidation(_name, _brand, _model, _details, _year, _value, _mileage)
+        dataValidation(_name, _brand, _model, _details, _year, _valueDay, _mileage)
         returns(uint256)
         {          
             vehiclesCounter ++;
@@ -161,7 +159,7 @@ contract Decar{
                 model: _model,    
                 details: _details,  
                 year: _year,            
-                value: _value,         
+                valueDay: _valueDay,         
                 mileage: _mileage
             });
 
@@ -170,7 +168,7 @@ contract Decar{
             
             ownerVehicle[msg.sender].push(vehiclesCounter);
 
-            emit vehicleRegistered (vehiclesCounter, _name, _brand, _model, _details, _year, _value, _mileage);
+            emit vehicleRegistered (vehiclesCounter, _name, _brand, _model, _details, _year, _valueDay, _mileage);
             return vehiclesCounter;
         }
 
@@ -182,7 +180,7 @@ contract Decar{
     * @param _model Modelo do veiculo
     * @param _details Detalhes do veiculo
     * @param _year Ano do veiculo
-    * @param _value Valor do veiculo
+    * @param _valueDay Valor do veiculo
     * @param _mileage Quilometragem do veiculo
     **/
     function vehicleUpdate(
@@ -192,11 +190,11 @@ contract Decar{
         string memory _model,
         string memory _details,
         uint16 _year,
-        uint256 _value,
+        uint256 _valueDay,
         uint256 _mileage
         ) external
           onlyPlataformOwner()
-          dataValidation(_name, _brand, _model, _details, _year, _value, _mileage)
+          dataValidation(_name, _brand, _model, _details, _year, _valueDay, _mileage)
           vehicleExist(_id)
           returns(uint256)
           {
@@ -208,13 +206,13 @@ contract Decar{
                 model: _model,
                 details: _details,
                 year: _year,
-                value: _value,
+                valueDay: _valueDay,
                 mileage: _mileage,
                 registeredAtDate: vehicles[_id].registeredAtDate,
                 isRented: false
             });
 
-            emit vehicleUpdate (_id, _name, _brand, _model, _details, _year, _value, _mileage,
+            emit vehicleUpdate (_id, _name, _brand, _model, _details, _year, _valueDay, _mileage,
                                 vehicles[_id].registeredAtDate, vehicles[_id].isRented);
             return _id;
     }
@@ -225,19 +223,19 @@ contract Decar{
     * @param _days Dias de locação
     **/
     function vehicleRental(uint256 _id, uint256 _days) external  payable 
-             onlyPlataformOwner() 
              vehicleExist(_id) 
              vehicleIsRented(_id) 
         {
 
         Vehicle storage vehicle = vehicles[_id];
 
-        uint256 totalCost = _days * vehicle.value;
+        uint256 totalCost = _days * vehicle.valueDay;
 
         require (msg.sender != plataformOwner, "O proprietario nao pode alugar o seu proprio carro.");
         require (_days >=1, "Quantidade de dias nao pode ser menor que 1 dia.");
 
         locatedVehicles ++;
+        unoccupiedVehicles --;
         rentals[locatedVehicles] = Rental({
             rentalId:locatedVehicles,
             tenant:msg.sender,
@@ -246,7 +244,7 @@ contract Decar{
             rentalValue:totalCost
         });
 
-        isRented = true;
+        vehicle.isRented = true;
         valueTotalToReceive += totalCost;
         emit vehicleRented ( vehicle.id,  locatedVehicles, msg.sender);
     }
@@ -256,15 +254,16 @@ contract Decar{
     * @param _id Id do veiculo
     * @param _days Dias de locação
     **/
-    function CompletedRental(uint256 _rentalId) external payable vehicleExist(_rentalId) returns (uint256){
+    function CompletedRental(uint256 _rentalId, uint256 id) external payable vehicleExist(_rentalId) returns (uint256){
         Rental storage rental = rentals[_rentalId];
+       
         require(rental.isActive, "O veiculo nao esta locado");
         require(msg.sender == rental.tenant || 
                 msg.sender == plataformOwner,
                 "Somente o proprietario ou o locador podem finalizar a locacao.");      
 
         // Cálculo da locação
-        uint256 totalCost = rental.rentalDays * rental.rentalValue;
+        uint256 totalCost = rental.rentalValue;
         if (msg.value < totalCost){
             missingValue = totalCost - msg.value;
            emit ("Faltam R$" +  missingValue);
@@ -280,6 +279,7 @@ contract Decar{
         require(success, "Falha ao transferir fundos");
 
         rental.isActive = false;
+        rental.isRented = false;
         emit rentalCompleted( vehicles.id, rental.rentalId, rental.tenant);
         return _rentalId;
     }
